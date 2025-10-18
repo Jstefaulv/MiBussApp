@@ -1,3 +1,4 @@
+import StopsView from '@/components/views/StopsView';
 import { obtenerInfoParadero } from '@/services/paraderoService';
 import { detectorParaderoStyles as styles } from '@/styles/detectorParaderoStyles';
 import { obtenerStopIdMasCercano } from '@/utils/geolocation';
@@ -5,8 +6,7 @@ import { procesarDatosAPI } from '@/utils/processDataApi';
 import stopsData from '@/utils/stops.json';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-
+import { ActivityIndicator, Text } from 'react-native';
 
 
 export default function DetectorParadero() {
@@ -52,41 +52,6 @@ export default function DetectorParadero() {
   if (!stopId) return <Text style={styles.centered}>No se pudo detectar el paradero cercano.</Text>;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.paraderoBox}>
-        <Text style={styles.paraderoText}>Paradero: {stopId}</Text>
-      </View>
-      <Text style={styles.tituloProximasMicros}>Próximas micros</Text>
-      {microsData.length === 0 ? (
-        <Text style={styles.sinMicros}>No hay buses próximos en este momento.</Text>
-      ) : (
-        <FlatList
-          data={microsData}
-          contentContainerStyle={styles.listaMicrosContainer}
-          keyExtractor={(_, idx) => idx.toString()}
-          renderItem={({ item, index }) => (
-            <View>
-              <View style={styles.filaMicro}>
-                <View style={styles.microCol}>
-                  <Text style={styles.microNum}>{item.numero}</Text>
-                  <Text style={styles.busEmoji}>🚌</Text>
-                </View>
-                <View style={styles.infoCol}>
-                  <Text style={styles.llegaTiempo}>Llega: {item.llega}</Text>
-                  <Text style={styles.patente}>
-                    {item.patente}{' '}
-                    <Text style={styles.microDist}>
-                      ({item.distancia ? item.distancia + ' m' : '? m'})
-                    </Text>
-                  </Text>
-                </View>
-              </View>
-              {index < microsData.length - 1 && <View style={styles.separadorFila} />}
-            </View>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </View>
-  );
+    <StopsView stopId={stopId} microsData={microsData}></StopsView>
+      );
 }
