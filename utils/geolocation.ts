@@ -1,6 +1,11 @@
-export const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+export function calcularDistancia(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
   const toRad = (value: number) => (value * Math.PI) / 180;
-  const R = 6371; // Radio Tierra Km
+  const R = 6371; 
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
@@ -9,23 +14,21 @@ export const calcularDistancia = (lat1: number, lon1: number, lat2: number, lon2
     Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-};
+}
 
-export const obtenerParaderoMasCercano = (
+export function obtenerStopIdMasCercano(
   lat: number,
   lon: number,
-  paraderos: { id: string; lat: number; lon: number }[]
-): string | null => {
+  stops: { stop_id: string; stop_lat: number; stop_lon: number }[]
+): string | null {
   let minDist = Infinity;
-  let paraderoID: string | null = null;
-
-  for (const p of paraderos) {
-    const dist = calcularDistancia(lat, lon, p.lat, p.lon);
+  let stopId: string | null = null;
+  for (const stop of stops) {
+    const dist = calcularDistancia(lat, lon, stop.stop_lat, stop.stop_lon);
     if (dist < minDist) {
       minDist = dist;
-      paraderoID = p.id;
+      stopId = stop.stop_id;
     }
   }
-
-  return paraderoID;
-};
+  return stopId;
+}
