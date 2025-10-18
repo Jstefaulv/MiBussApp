@@ -8,22 +8,3 @@ export async function obtenerInfoParadero(nearestStopId: string) {
     throw error;
   }
 }
-
-
-/*
-
-// src/services/paraderoService.ts
-
- const response = await fetch(`https://api.xor.cl/red/bus-stop/${nearestStopId}`);
-        if (!response.ok) throw new Error('Error en la API de paradero');
-        const apiData = await response.json();
-        const buses = procesarDatosAPI(apiData);
-        setMicrosData(buses);
-      } catch (e) {
-        setErrorMsg('No se pudo obtener información en este momento');
-      } finally {
-        setLoading(false);
-      }
-}
-
-*/ 

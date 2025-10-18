@@ -1,58 +1,15 @@
+import { obtenerInfoParadero } from '@/services/paraderoService';
 import { detectorParaderoStyles as styles } from '@/styles/detectorParaderoStyles';
+import { obtenerStopIdMasCercano } from '@/utils/geolocation';
+import { procesarDatosAPI } from '@/utils/processDataApi';
 import stopsData from '@/utils/stops.json';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
-function calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const toRad = (value: number) => (value * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
 
-function obtenerStopIdMasCercano(lat: number, lon: number, stops: { stop_id: string; stop_lat: number; stop_lon: number }[]) {
-  let minDist = Infinity;
-  let stopId: string | null = null;
 
-  for (const stop of stops) {
-    const dist = calcularDistancia(lat, lon, stop.stop_lat, stop.stop_lon);
-    if (dist < minDist) {
-      minDist = dist;
-      stopId = stop.stop_id;
-    }
-  }
-  return stopId!;
-}
-
-function procesarDatosAPI(apiData: any) {
-  if (!apiData || !apiData.services) return [];
-  const salida: any[] = [];
-  for (const service of apiData.services) {
-    if (service.buses && service.buses.length > 0) {
-      for (const bus of service.buses) {
-        salida.push({
-          numero: service.id ?? service.code,
-          patente: bus.id ?? bus.plate,
-          llega:
-            bus.min_arrival_time !== undefined
-              ? `0-${bus.min_arrival_time} min`
-              : 'N/A',
-          distancia: bus.meters_distance ?? bus.distance,
-        });
-      }
-    }
-  }
-  return salida;
-}
-
-export default function ParaderoDetector() {
+export default function DetectorParadero() {
   const [stopId, setStopId] = useState<string | null>(null);
   const [microsData, setMicrosData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,16 +29,14 @@ export default function ParaderoDetector() {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         };
-        const nearestStopId = obtenerStopIdMasCercano(
-          coords.latitude,
-          coords.longitude,
-          stopsData
-        );
+        const nearestStopId = obtenerStopIdMasCercano(coords.latitude, coords.longitude, stopsData);
         setStopId(nearestStopId);
 
-        const response = await fetch(`https://api.xor.cl/red/bus-stop/${nearestStopId}`);
-        if (!response.ok) throw new Error('Error en la API de paradero');
-        const apiData = await response.json();
+        if (!nearestStopId) {
+             throw new Error('No se pudo determinar el ID del paradero cercano.');
+        }
+
+        const apiData = await obtenerInfoParadero(nearestStopId);
         const buses = procesarDatosAPI(apiData);
         setMicrosData(buses);
       } catch (e) {
@@ -92,18 +47,9 @@ export default function ParaderoDetector() {
     })();
   }, []);
 
-  if (loading)
-    return <ActivityIndicator size="large" color="#0b910fff" style={styles.centered} />;
-  if (errorMsg)
-    return (
-      <Text style={[styles.centered, { color: 'red' }]}>{errorMsg}</Text>
-    );
-  if (!stopId)
-    return (
-      <Text style={styles.centered}>
-        No se pudo detectar el paradero cercano.
-      </Text>
-    );
+  if (loading) return <ActivityIndicator size="large" color="#0b910fff" style={styles.centered} />;
+  if (errorMsg) return <Text style={[styles.centered, { color: 'red' }]}>{errorMsg}</Text>;
+  if (!stopId) return <Text style={styles.centered}>No se pudo detectar el paradero cercano.</Text>;
 
   return (
     <View style={styles.container}>
@@ -135,9 +81,7 @@ export default function ParaderoDetector() {
                   </Text>
                 </View>
               </View>
-              {index < microsData.length - 1 && (
-                <View style={styles.separadorFila} />
-              )}
+              {index < microsData.length - 1 && <View style={styles.separadorFila} />}
             </View>
           )}
           showsVerticalScrollIndicator={false}
