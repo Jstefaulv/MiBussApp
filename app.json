@@ -26,7 +26,8 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png",
       "build": {
-        "include":["package"]
+        "include":["package"],
+        "publicPath": "https://github.com/Jstefaulv/MiBussApp"
       }
     },
     "plugins": [
