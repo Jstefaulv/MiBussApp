@@ -1,8 +1,8 @@
 import ExploreView from '@/components/views/ExploreView';
 import { obtenerInfoParadero } from '@/services/paraderoService';
 import {
-    filtrarMicrosPorId,
-    procesarDatosAPI,
+  filtrarMicrosPorId,
+  procesarDatosAPI,
 } from '@/utils/processDataApi';
 import React, { useState } from 'react';
 
@@ -23,9 +23,6 @@ export default function ExploreSearch() {
 
     try {
       const apiData = await obtenerInfoParadero(paraderoID.trim());
-      console.log('Datos API recibidos:', apiData);
-
-      
       const services = apiData.services ?? apiData.data?.services;
 
       if (!services || services.length === 0) {
@@ -46,9 +43,8 @@ export default function ExploreSearch() {
       }
 
       setResultados(buses);
-    } catch (e) {
+    } catch {
       setError('Error al obtener datos del paradero.');
-      console.error(e);
     }
   }
 

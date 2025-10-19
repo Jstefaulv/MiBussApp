@@ -4,22 +4,28 @@ export const exploreScreenStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#050505',
   },
-   bannerContainer: {
+  bannerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 50,
-    paddingBottom: 30,
-    backgroundColor: '#1C2331', // Banner color sólido
+    paddingTop: 60,
+    paddingBottom: 38,
+    minHeight: 150,
+    backgroundColor: '#1C2331',
     marginBottom: 8,
     width: '100%',
   },
   headerText: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    letterSpacing: 1,
+    letterSpacing: 1.1,
+    textAlign: 'center',
   },
-  container: { padding: 14 },
+  listaContainer: {
+    flex: 1,
+    paddingHorizontal: 14,
+    paddingTop: 10,
+  },
   input: {
     borderWidth: 1,
     borderColor: '#2978D7',
@@ -82,10 +88,4 @@ export const exploreScreenStyles = StyleSheet.create({
     backgroundColor: '#333',
     marginTop: 10,
   },
-  listaContainer: {
-    flex: 1,
-    paddingHorizontal: 14,
-    paddingTop: 10,
-  },
-
 });
